@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
 import { TenantModule } from './tenant/tenant.module';
 
 @Module({
@@ -22,8 +23,8 @@ import { TenantModule } from './tenant/tenant.module';
       }),
       inject: [ConfigService],
     }),
-
     TenantModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
