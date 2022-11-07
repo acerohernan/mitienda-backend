@@ -1,25 +1,10 @@
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { server } from './app.e2e-spec';
 
 describe('Tenant', () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-
-    app.useGlobalPipes(new ValidationPipe());
-
-    await app.init();
-  });
-
   it('(POST) /tenant/auth/signup', async () => {
-    return request(app.getHttpServer())
+    return request(server)
       .post('/tenant/auth/signup')
       .send({
         email: 'test1@ŧest.com',
@@ -27,9 +12,5 @@ describe('Tenant', () => {
         phone: '999113934',
       })
       .expect(HttpStatus.CREATED);
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });
