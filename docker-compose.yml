@@ -11,3 +11,25 @@ services:
       - POSTGRES_DB=mitienda_local
     volumes:
       - .docker/postgres:/var/lib/postgresql/data
+    networks:
+      - api-network
+
+  mitienda-api:
+    build:
+      context: .
+    restart: always
+    environment:
+      - TYPEORM_USERNAME=mitienda
+      - TYPEORM_PASSWORD=password
+      - TYPEORM_DATABASE=mitienda_local
+      - TYPEORM_HOST=postgres
+      - TYPEORM_PORT=5432
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    networks:
+      - api-network
+
+networks:
+  api-network:
