@@ -1,0 +1,47 @@
+name: Node CI
+
+on:
+  push:
+    branches: [master]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix: 
+        node-version: [16.18.0]
+        
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: mitienda
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mitienda_local
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+        
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: User Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Installing nest cli
+        run: |
+          npm i -g @nestjs/cli
+          
+      - name: yarn install
+        run: | 
+          yarn
+      
+      - name: yarn build
+        run: | 
+          yarn build
