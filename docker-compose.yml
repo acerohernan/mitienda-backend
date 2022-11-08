@@ -2,6 +2,7 @@ version: '3'
 services:
   postgres:
     image: postgres:15
+    container_name: postgres
     restart: always
     ports:
       - 5432:5432
@@ -14,10 +15,11 @@ services:
     networks:
       - api-network
 
-  mitienda-api:
+  api:
     build:
       context: .
-    restart: always
+    restart: unless-stopped
+    container_name: api
     environment:
       - TYPEORM_USERNAME=mitienda
       - TYPEORM_PASSWORD=password
@@ -31,5 +33,24 @@ services:
     networks:
       - api-network
 
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - api
+    networks:
+      - api-network
+
 networks:
   api-network:
+    driver: bridge
+
+volumes:
+  web-root:
+    driver: local
