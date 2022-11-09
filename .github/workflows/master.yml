@@ -6,7 +6,7 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: shelf-hosted
 
     strategy:
       matrix:
@@ -20,7 +20,7 @@ jobs:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: mitienda_local
         ports:
-          - 5432:5432
+          - 5532:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -54,14 +54,8 @@ jobs:
           TYPEORM_PASSWORD: password
           TYPEORM_DATABASE: mitienda_local
           TYPEORM_HOST: localhost
-          TYPEORM_PORT: 5432
+          TYPEORM_PORT: 5532
 
-  cd:
-    runs-on: self-hosted
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Check the forlder of the code
+      - name: Check the directory name
         run: |
           pwd
