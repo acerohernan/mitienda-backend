@@ -1,5 +1,7 @@
 import { Controller, Get } from '@nestjs/common/decorators';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('root')
 @Controller('/')
 export class AppController {
   @Get()

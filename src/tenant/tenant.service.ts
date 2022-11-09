@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
+import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { Tenant } from './entities/tenant.entity';
 
 @Injectable()
@@ -11,8 +12,8 @@ export class TenantService {
     @InjectRepository(Tenant) private tenantRepository: Repository<Tenant>,
   ) {}
 
-  async signUp(createTenantDTO: CreateTenantDTO): Promise<void> {
-    const { email, password, phone } = createTenantDTO;
+  async signUp(dto: CreateTenantDTO): Promise<void> {
+    const { email, password, phone } = dto;
 
     const exists = await this.tenantRepository.findOneBy({ email });
 
@@ -30,6 +31,10 @@ export class TenantService {
     });
 
     await this.tenantRepository.save(tenant);
+  }
+
+  async login(dto: LoginTenantDTO): Promise<string> {
+    return dto.email;
   }
 
   private hashString(string: string): string {
