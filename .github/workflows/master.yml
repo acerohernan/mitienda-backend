@@ -56,6 +56,6 @@ jobs:
           TYPEORM_HOST: localhost
           TYPEORM_PORT: 5432
 
-      - name: Show the active services
+      - name: Show the active docker services
         run: |
           docker ps
