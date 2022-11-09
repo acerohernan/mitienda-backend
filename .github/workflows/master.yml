@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:
@@ -55,3 +55,7 @@ jobs:
           TYPEORM_DATABASE: mitienda_local
           TYPEORM_HOST: localhost
           TYPEORM_PORT: 5432
+
+      - name: Show the active services
+        run: |
+          docker ps
