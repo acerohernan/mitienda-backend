@@ -6,7 +6,7 @@ on:
 
 jobs:
   ci:
-    runs-on: shelf-hosted
+    runs-on: self-hosted
 
     strategy:
       matrix:
