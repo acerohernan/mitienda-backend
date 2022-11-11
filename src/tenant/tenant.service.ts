@@ -33,8 +33,8 @@ export class TenantService {
     await this.tenantRepository.save(tenant);
   }
 
-  async login(dto: LoginTenantDTO): Promise<string> {
-    return dto.email;
+  async login(dto: LoginTenantDTO): Promise<{ token: string }> {
+    return { token: dto.email };
   }
 
   private hashString(string: string): string {

@@ -19,6 +19,7 @@ export class TenantController {
     return this.tenantService.signUp(createTenantDTO);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('/auth/login')
   async login(@Body() loginTenantDTO: LoginTenantDTO) {
     return this.tenantService.login(loginTenantDTO);

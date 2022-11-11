@@ -32,11 +32,10 @@ export class TypeOrmEnvironmentArranger implements EnvironmentArranger {
       port: 5432,
       host: 'localhost',
       database: 'mitienda_local',
-      entities: [__dirname + '/../../src/**/**/entities/*{.js,.ts}'],
+      entities: [__dirname + '/../../../src/**/**/entities/*{.js,.ts}'],
       synchronize: true,
     });
 
-    const connection = await appDataSource.initialize();
-    this.connection = connection;
+    this.connection = await appDataSource.initialize();
   }
 }
