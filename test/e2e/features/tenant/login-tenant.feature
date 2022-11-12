@@ -4,12 +4,21 @@ Feature: User Login
     I want to authenticate me
 
     Scenario: An registered user
-        Given I send a POST request to "/tenant/auth/login" with body:
+        Given I send a POST request to "/tenant/auth/signup" with body:
         """
         {
-            "email": "login@test.com",
+            "email": "login1@test.com",
+            "password": "Password1",
+            "phone": "999113934",
+            "country_code": "PE"
+        }
+        """
+        Then I send a POST request to "/tenant/auth/login" with body:
+        """
+        {
+            "email": "login1@test.com",
             "password": "Password1"
         }
         """
         And the response status code should be 200
-        And the response should be visible in the console
+        And the response body should have the property "token"

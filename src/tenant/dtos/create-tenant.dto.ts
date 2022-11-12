@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNumberString, Length, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumberString,
+  Length,
+  Matches,
+} from 'class-validator';
 
 export class CreateTenantDTO {
   @ApiProperty()
@@ -17,4 +23,8 @@ export class CreateTenantDTO {
   @IsNumberString({}, { message: 'Please enter a valid phone number' })
   @Length(6, 20, { message: 'Please enter a valid phone number' })
   phone: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  country_code: string;
 }

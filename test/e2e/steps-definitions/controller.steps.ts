@@ -47,7 +47,7 @@ Then('the response body should have an error message', () => {
 Then(
   'the response body should have the property {string}',
   (property: string) => {
-    if (_response.body[property])
+    if (!_response.body[property])
       throw new Error(`The response not have the property ${property}`);
   },
 );
