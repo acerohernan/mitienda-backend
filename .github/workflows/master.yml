@@ -56,8 +56,8 @@ jobs:
           TYPEORM_HOST: localhost
           TYPEORM_PORT: 5432
           MAILER_FROM: Test (no-reply) <test@no-reply.com>
-          MAILER_HOST: smtp.mailtrap.io
-          MAILER_PORT: 2525
-          MAILER_USER: 8d8d3f2e66954f
-          MAILER_PASS: 6f2d220fd13404
+          MAILER_HOST: smtp.ethereal.email
+          MAILER_PORT: 587
+          MAILER_USER: julianne25@ethereal.email
+          MAILER_PASS: xb5gBcm8w1D1ZdBZp6
           JWT_SECRET: testsecret
