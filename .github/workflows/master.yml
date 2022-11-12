@@ -61,3 +61,4 @@ jobs:
           MAILER_USER: julianne25@ethereal.email
           MAILER_PASS: xb5gBcm8w1D1ZdBZp6
           JWT_SECRET: testsecret
+          JWT_EXPIRATION: 15m

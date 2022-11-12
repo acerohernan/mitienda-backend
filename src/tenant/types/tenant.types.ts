@@ -1,7 +1,7 @@
 export enum TenantStatus {
-  INACTIVE = 0,
+  EXPIRED = 0,
   ACTIVE = 1,
-  EXPIRED = 1,
+  IN_REGISTRATION = 2,
 }
 export type TenantCountry = {
   name: string;

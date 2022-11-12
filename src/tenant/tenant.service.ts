@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -8,6 +12,7 @@ import { Repository } from 'typeorm';
 import { v4 as uuid, validate as validateUuid } from 'uuid';
 import { EmailService } from '../shared/services/email.service';
 import { COUNTRIES } from './constants/tenant.constans';
+import { CompleteRegistrationDTO } from './dtos/complete-registration.dto';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
@@ -52,7 +57,7 @@ export class TenantService {
 
     const tenant = this.tenantRepository.create({
       id: uuid(),
-      status: TenantStatus.ACTIVE,
+      status: TenantStatus.IN_REGISTRATION,
       email,
       password: hashedPassword,
       phone,
@@ -115,6 +120,7 @@ export class TenantService {
 
     const token = jwt.sign(payload, this.config.get('JWT_SECRET'), {
       algorithm: 'HS256',
+      expiresIn: this.config.get('JWT_EXPIRATION'),
     });
 
     return { token };
@@ -182,6 +188,83 @@ export class TenantService {
     await this.forgotPasswordRequestRepository.delete({ id: forgotRequest.id });
   }
 
+  async getStoreDomainAvaibility(domain: string | undefined): Promise<void> {
+    if (!domain) throw new BadRequestException('The store domain is invalid');
+
+    if (domain.length < 6 || domain.length > 20)
+      throw new BadRequestException(
+        'The store domain must have minimum 6 characters and maximun 20 characters',
+      );
+
+    const isTaken = await this.storeRepository.findOneBy({
+      domain,
+    });
+
+    if (isTaken)
+      throw new BadRequestException(
+        'The store domain is taken, please choose another.',
+      );
+  }
+
+  async completeRegistration(dto: CompleteRegistrationDTO, user_id: string) {
+    const {
+      tenant_name,
+      tenant_surname,
+      store_category,
+      store_domain,
+      store_name,
+    } = dto;
+
+    /* Verify if the store domain is taken */
+    const domainIsTaken = await this.storeRepository.findOneBy({
+      domain: store_domain,
+    });
+
+    if (domainIsTaken)
+      throw new BadRequestException(
+        `The store domain <${store_domain}> is taken, please choose another.`,
+      );
+
+    /* Get the tenant */
+
+    const tenant = await this.tenantRepository.findOneBy({ id: user_id });
+
+    if (!tenant)
+      throw new NotFoundException(
+        'Not found tenant information, the token is malformed',
+      );
+
+    /* Verify if the tenant is in registration */
+
+    if (tenant.status !== TenantStatus.IN_REGISTRATION)
+      throw new BadRequestException(
+        "You've already complete your registration",
+      );
+
+    /* Updates the store information */
+
+    await this.storeRepository.update(
+      { id: tenant.store_id },
+      {
+        domain: store_domain,
+        name: store_name,
+        category: store_category,
+      },
+    );
+
+    /* Updates tenant information an change his status to "active"*/
+
+    await this.tenantRepository.update(
+      { id: tenant.id },
+      {
+        name: tenant_name,
+        surname: tenant_surname,
+        status: TenantStatus.ACTIVE,
+      },
+    );
+  }
+
+  /* Utils */
   private hashString(string: string): string {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(string, salt);

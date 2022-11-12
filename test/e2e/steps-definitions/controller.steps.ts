@@ -7,6 +7,7 @@ import { wait } from './utils.steps';
 
 let _request: request.Test;
 let _response: request.Response;
+let _token: string | null = null;
 
 Given('I send a GET request to {string}', async (route: string) => {
   _request = request(application.getHttpServer()).get(route);
@@ -20,6 +21,24 @@ Given(
   async (route: string, body: string) => {
     _request = request(application.getHttpServer())
       .post(route)
+      .send(JSON.parse(body));
+    _response = await _request;
+
+    wait(100);
+  },
+);
+
+Given(
+  'I send an authenticated POST request to {string} with body:',
+  async (route: string, body: string) => {
+    if (!_token)
+      throw new Error(
+        'Error to authenticate the user. The token is not defined',
+      );
+
+    _request = request(application.getHttpServer())
+      .post(route)
+      .auth(_token, { type: 'bearer' })
       .send(JSON.parse(body));
     _response = await _request;
 
@@ -51,6 +70,13 @@ Then(
       throw new Error(`The response not have the property ${property}`);
   },
 );
+
+Then('the response body should have an access token', async () => {
+  if (!_response.body['token'])
+    throw new Error('The response body not have an access token');
+
+  _token = _response.body['token'];
+});
 
 /* Debug steps */
 Then('the response should be visible in the console', () => {
