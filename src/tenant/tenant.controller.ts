@@ -11,9 +11,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
-  AuthUser,
-  AuthUserRequest,
-} from '../shared/decorators/auth-user.decorator';
+  AuthTenant,
+  AuthTenantRequest,
+} from '../shared/decorators/auth-tenant.decorator';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CompleteRegistrationDTO } from './dtos/complete-registration.dto';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
@@ -26,6 +26,8 @@ import { TenantService } from './tenant.service';
 @Controller('tenant')
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
+
+  /* Tenant Auth Endpoints*/
 
   @HttpCode(HttpStatus.CREATED)
   @Post('/auth/signup')
@@ -57,19 +59,34 @@ export class TenantController {
     return this.tenantService.restorePassword(dto);
   }
 
-  @Get('/store/domain/check')
-  async getStoreDomainAvaibility(@Query('domain') domain: string | undefined) {
-    return this.tenantService.getStoreDomainAvaibility(domain);
-  }
-
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('/auth/complete-registration')
   async completeRegistration(
     @Body() dto: CompleteRegistrationDTO,
-    @AuthUserRequest() user: AuthUser,
+    @AuthTenantRequest() tenant: AuthTenant,
   ) {
-    const { user_id } = user;
-    return this.tenantService.completeRegistration(dto, user_id);
+    const { tenant_id } = tenant;
+    return this.tenantService.completeRegistration(dto, tenant_id);
+  }
+
+  /* Tenant Endpoints */
+  @UseGuards(AuthGuard)
+  @Get('/information')
+  async getInformation(@AuthTenantRequest() tenant: AuthTenant) {
+    return this.tenantService.getTenantInformation(tenant.tenant_id);
+  }
+
+  /* Tenant Store Endpoints*/
+
+  @UseGuards(AuthGuard)
+  @Get('/store/information')
+  async getStoreInformation(@AuthTenantRequest() tenant: AuthTenant) {
+    return this.tenantService.getStoreInformation(tenant.store_id);
+  }
+
+  @Get('/store/domain/check')
+  async getStoreDomainAvaibility(@Query('domain') domain: string | undefined) {
+    return this.tenantService.getStoreDomainAvaibility(domain);
   }
 }

@@ -17,6 +17,23 @@ Given('I send a GET request to {string}', async (route: string) => {
 });
 
 Given(
+  'I send an authenticated GET request to {string}',
+  async (route: string) => {
+    if (!_token)
+      throw new Error(
+        'Error to authenticate the user. The token is not defined',
+      );
+
+    _request = request(application.getHttpServer())
+      .get(route)
+      .auth(_token, { type: 'bearer' });
+    _response = await _request;
+
+    wait(100);
+  },
+);
+
+Given(
   'I send a POST request to {string} with body:',
   async (route: string, body: string) => {
     _request = request(application.getHttpServer())

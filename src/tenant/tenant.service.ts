@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { omit } from 'lodash';
 import randomstring from 'randomstring';
 import { Repository } from 'typeorm';
 import { v4 as uuid, validate as validateUuid } from 'uuid';
@@ -73,7 +74,7 @@ export class TenantService {
     const random_store_name = this.getRandomStoreName();
 
     const store = this.storeRepository.create({
-      user_id: tenant.id,
+      tenant_id: tenant.id,
       name: random_store_name,
       domain: random_store_name,
       whatsapp: tenant.phone,
@@ -142,7 +143,7 @@ export class TenantService {
 
     const forgot_request = this.forgotPasswordRequestRepository.create({
       id: forgot_request_id,
-      user_id: tenant.id,
+      tenant_id: tenant.id,
     });
 
     await this.forgotPasswordRequestRepository.save(forgot_request);
@@ -180,7 +181,7 @@ export class TenantService {
     const newPasswordHashed = this.hashString(password);
 
     await this.tenantRepository.update(
-      { id: forgotRequest.user_id },
+      { id: forgotRequest.tenant_id },
       { password: newPasswordHashed },
     );
 
@@ -206,7 +207,7 @@ export class TenantService {
       );
   }
 
-  async completeRegistration(dto: CompleteRegistrationDTO, user_id: string) {
+  async completeRegistration(dto: CompleteRegistrationDTO, tenant_id: string) {
     const {
       tenant_name,
       tenant_surname,
@@ -227,7 +228,7 @@ export class TenantService {
 
     /* Get the tenant */
 
-    const tenant = await this.tenantRepository.findOneBy({ id: user_id });
+    const tenant = await this.tenantRepository.findOneBy({ id: tenant_id });
 
     if (!tenant)
       throw new NotFoundException(
@@ -262,6 +263,34 @@ export class TenantService {
         status: TenantStatus.ACTIVE,
       },
     );
+  }
+
+  async getTenantInformation(
+    tenant_id: string,
+  ): Promise<{ tenant: Partial<Tenant> }> {
+    const tenant = await this.tenantRepository.findOneBy({ id: tenant_id });
+
+    if (!tenant) throw new NotFoundException('The tenant not exists');
+
+    const privateFields = ['password'];
+
+    const tenantToShare = omit(tenant, privateFields);
+
+    return { tenant: tenantToShare };
+  }
+
+  async getStoreInformation(
+    store_id: string,
+  ): Promise<{ store: Partial<Store> }> {
+    const store = await this.storeRepository.findOneBy({ id: store_id });
+
+    if (!store) throw new NotFoundException('The store not exists');
+
+    const privateFields = [];
+
+    const storeToShare = omit(store, privateFields);
+
+    return { store: storeToShare };
   }
 
   /* Utils */

@@ -11,7 +11,7 @@ export class Store {
     type: 'varchar',
     unique: true,
   })
-  user_id: string;
+  tenant_id: string;
 
   @Column({
     type: 'varchar',

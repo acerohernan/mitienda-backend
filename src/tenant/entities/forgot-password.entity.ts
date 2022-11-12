@@ -16,7 +16,7 @@ export class ForgotPasswordRequest {
     type: 'varchar',
     unique: true,
   })
-  user_id: string;
+  tenant_id: string;
 
   @CreateDateColumn()
   created_at: Date;
