@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -24,6 +25,7 @@ export class TenantService {
     @InjectRepository(ForgotPasswordRequest)
     private forgotPasswordRequestRepository: Repository<ForgotPasswordRequest>,
     private emailService: EmailService,
+    private config: ConfigService,
   ) {}
 
   async signUp(dto: CreateTenantDTO): Promise<void> {
@@ -110,7 +112,10 @@ export class TenantService {
       sub: tenant.id,
       store: tenant.store_id,
     };
-    const token = jwt.sign(payload, 'secret', { algorithm: 'HS256' });
+
+    const token = jwt.sign(payload, this.config.get('JWT_SECRET'), {
+      algorithm: 'HS256',
+    });
 
     return { token };
   }

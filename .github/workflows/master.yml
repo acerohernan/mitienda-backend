@@ -55,3 +55,11 @@ jobs:
           TYPEORM_DATABASE: mitienda_local
           TYPEORM_HOST: localhost
           TYPEORM_PORT: 5432
+          
+          MAILER_FROM: ""MiTienda Soporte" <mitienda@no-reply.com>"
+          MAILER_HOST: smtp.mailtrap.io
+          MAILER_PORT: 2525
+          MAILER_USER: 8d8d3f2e66954f
+          MAILER_PASS: 6f2d220fd13404
+
+          JWT_SECRET: testsecret

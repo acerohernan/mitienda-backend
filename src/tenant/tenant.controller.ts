@@ -7,7 +7,6 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config/dist';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
@@ -18,10 +17,7 @@ import { TenantService } from './tenant.service';
 @ApiTags('tenant')
 @Controller('tenant')
 export class TenantController {
-  constructor(
-    private readonly tenantService: TenantService,
-    private config: ConfigService,
-  ) {}
+  constructor(private readonly tenantService: TenantService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post('/auth/signup')
