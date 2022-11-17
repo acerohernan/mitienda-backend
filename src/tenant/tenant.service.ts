@@ -18,6 +18,7 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { ForgotPasswordRequest } from './entities/forgot-password.entity';
 import { Store } from './entities/store.entity';
 import { Tenant } from './entities/tenant.entity';
@@ -291,6 +292,28 @@ export class TenantService {
     const storeToShare = omit(store, privateFields);
 
     return { store: storeToShare };
+  }
+
+  async updateTenantInformation(
+    dto: UpdateTenantDTO,
+    tenant_id: string,
+  ): Promise<void> {
+    console.log(dto);
+
+    /* Delete all the protected fields */
+
+    const nonEditableFields = [
+      'id',
+      'store_id',
+      'status',
+      'expiration_date',
+      'email',
+      'country',
+    ];
+
+    const dataToUpdate = omit(dto, nonEditableFields);
+
+    await this.tenantRepository.update({ id: tenant_id }, dataToUpdate);
   }
 
   /* Utils */

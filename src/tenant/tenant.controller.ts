@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { TenantService } from './tenant.service';
 
 @ApiTags('tenant')
@@ -75,6 +77,15 @@ export class TenantController {
   @Get('/information')
   async getInformation(@AuthTenantRequest() tenant: AuthTenant) {
     return this.tenantService.getTenantInformation(tenant.tenant_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('/information')
+  async updateInformation(
+    @AuthTenantRequest() tenant: AuthTenant,
+    @Body() dto: UpdateTenantDTO,
+  ) {
+    return this.tenantService.updateTenantInformation(dto, tenant.tenant_id);
   }
 
   /* Tenant Store Endpoints*/

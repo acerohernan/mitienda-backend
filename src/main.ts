@@ -13,6 +13,11 @@ async function bootstrap() {
   /* This is a library to improve the server security */
   app.use(helmet());
 
+  /* Manage the cors */
+  app.enableCors({
+    origin: '*',
+  });
+
   /* This is the nest integration with swagger */
   const config = new DocumentBuilder()
     .setTitle('MiTienda API')

@@ -63,6 +63,24 @@ Given(
   },
 );
 
+Given(
+  'I send an authenticated PUT request to {string} with body:',
+  async (route: string, body: string) => {
+    if (!_token)
+      throw new Error(
+        'Error to authenticate the user. The token is not defined',
+      );
+
+    _request = request(application.getHttpServer())
+      .put(route)
+      .auth(_token, { type: 'bearer' })
+      .send(JSON.parse(body));
+    _response = await _request;
+
+    wait(100);
+  },
+);
+
 Then('the response status code should be {int}', async (status: number) => {
   assert.deepStrictEqual(
     status,
