@@ -38,5 +38,3 @@ Feature: Update store information
         """
         And the response status code should be 200
         And the response body should be empty
-        Then I send an authenticated GET request to "/tenant/store/information"
-        And the response should be visible in the console

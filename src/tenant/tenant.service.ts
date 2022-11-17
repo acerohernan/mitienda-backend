@@ -18,9 +18,11 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateStoreSocialDTO } from './dtos/update-store-social';
 import { UpdateStoreDTO } from './dtos/update-store.dto';
 import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { ForgotPasswordRequest } from './entities/forgot-password.entity';
+import { StoreSocial } from './entities/store-social.entity';
 import { Store } from './entities/store.entity';
 import { Tenant } from './entities/tenant.entity';
 import { TenantCountry, TenantStatus } from './types/tenant.types';
@@ -30,6 +32,8 @@ export class TenantService {
   constructor(
     @InjectRepository(Tenant) private tenantRepository: Repository<Tenant>,
     @InjectRepository(Store) private storeRepository: Repository<Store>,
+    @InjectRepository(StoreSocial)
+    private storeSocialRepository: Repository<StoreSocial>,
     @InjectRepository(ForgotPasswordRequest)
     private forgotPasswordRequestRepository: Repository<ForgotPasswordRequest>,
     private emailService: EmailService,
@@ -100,6 +104,12 @@ export class TenantService {
       { id: tenant.id },
       { store_id: store.id },
     );
+
+    /* Create the store social */
+    const social = this.storeSocialRepository.create({
+      store_id: store.id,
+    });
+    await this.storeSocialRepository.save(social);
   }
 
   async login(dto: LoginTenantDTO): Promise<{ token: string }> {
@@ -336,6 +346,36 @@ export class TenantService {
     await this.storeRepository.update({ id: store_id }, dataToUpdate);
   }
 
+  async updateStoreSocial(
+    dto: UpdateStoreSocialDTO,
+    store_id: string,
+  ): Promise<void> {
+    /* Pick only the editable fields */
+    const editableFields: Array<keyof UpdateStoreSocialDTO> = [
+      'facebook',
+      'instagram',
+      'pinterest',
+      'tiktok',
+      'twitter',
+      'youtube',
+    ];
+
+    const dataToSave = pick(dto, editableFields);
+
+    /* Save the information */
+    await this.storeSocialRepository.update({ store_id }, dataToSave);
+  }
+
+  async getStoreSocial(
+    store_id: string,
+  ): Promise<{ social: Partial<StoreSocial> }> {
+    const social = await this.storeSocialRepository.findOneBy({ store_id });
+
+    if (!social)
+      throw new NotFoundException('The social of the store not exists');
+
+    return { social };
+  }
   /* Utils */
   private hashString(string: string): string {
     const salt = bcrypt.genSaltSync(10);

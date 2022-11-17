@@ -21,6 +21,7 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateStoreSocialDTO } from './dtos/update-store-social';
 import { UpdateStoreDTO } from './dtos/update-store.dto';
 import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { TenantService } from './tenant.service';
@@ -91,6 +92,11 @@ export class TenantController {
 
   /* Tenant Store Endpoints*/
 
+  @Get('/store/domain/check')
+  async getStoreDomainAvaibility(@Query('domain') domain: string | undefined) {
+    return this.tenantService.getStoreDomainAvaibility(domain);
+  }
+
   @UseGuards(AuthGuard)
   @Get('/store/information')
   async getStoreInformation(@AuthTenantRequest() tenant: AuthTenant) {
@@ -106,8 +112,18 @@ export class TenantController {
     return this.tenantService.updateStoreInformation(dto, tenant.store_id);
   }
 
-  @Get('/store/domain/check')
-  async getStoreDomainAvaibility(@Query('domain') domain: string | undefined) {
-    return this.tenantService.getStoreDomainAvaibility(domain);
+  @UseGuards(AuthGuard)
+  @Get('/store/social')
+  async getStoreSocial(@AuthTenantRequest() tenant: AuthTenant) {
+    return this.tenantService.getStoreSocial(tenant.store_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('/store/social')
+  async updateStoreSocial(
+    @AuthTenantRequest() tenant: AuthTenant,
+    @Body() dto: UpdateStoreSocialDTO,
+  ) {
+    return this.tenantService.updateStoreSocial(dto, tenant.store_id);
   }
 }
