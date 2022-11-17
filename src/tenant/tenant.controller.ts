@@ -21,6 +21,7 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateStoreDTO } from './dtos/update-store.dto';
 import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { TenantService } from './tenant.service';
 
@@ -94,6 +95,15 @@ export class TenantController {
   @Get('/store/information')
   async getStoreInformation(@AuthTenantRequest() tenant: AuthTenant) {
     return this.tenantService.getStoreInformation(tenant.store_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('/store/information')
+  async updateStoreInformation(
+    @AuthTenantRequest() tenant: AuthTenant,
+    @Body() dto: UpdateStoreDTO,
+  ) {
+    return this.tenantService.updateStoreInformation(dto, tenant.store_id);
   }
 
   @Get('/store/domain/check')

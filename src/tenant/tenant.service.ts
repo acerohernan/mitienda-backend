@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { omit } from 'lodash';
+import { omit, pick } from 'lodash';
 import randomstring from 'randomstring';
 import { Repository } from 'typeorm';
 import { v4 as uuid, validate as validateUuid } from 'uuid';
@@ -18,6 +18,7 @@ import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
 import { LoginTenantDTO } from './dtos/login-tenant.dto';
 import { RestorePasswordDTO } from './dtos/restore-password.dto';
+import { UpdateStoreDTO } from './dtos/update-store.dto';
 import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { ForgotPasswordRequest } from './entities/forgot-password.entity';
 import { Store } from './entities/store.entity';
@@ -298,22 +299,41 @@ export class TenantService {
     dto: UpdateTenantDTO,
     tenant_id: string,
   ): Promise<void> {
-    console.log(dto);
-
-    /* Delete all the protected fields */
-
-    const nonEditableFields = [
-      'id',
-      'store_id',
-      'status',
-      'expiration_date',
-      'email',
-      'country',
+    /* Only pick all the editable fields from dto*/
+    const editableFields: Array<keyof UpdateTenantDTO> = [
+      'name',
+      'phone',
+      'surname',
     ];
 
-    const dataToUpdate = omit(dto, nonEditableFields);
+    const dataToUpdate = pick(dto, editableFields);
 
+    /* Update the tenant */
     await this.tenantRepository.update({ id: tenant_id }, dataToUpdate);
+  }
+
+  async updateStoreInformation(
+    dto: UpdateStoreDTO,
+    store_id: string,
+  ): Promise<void> {
+    /* Only pick all the editable fields from dto*/
+    const editableFields: Array<keyof UpdateStoreDTO> = [
+      'name',
+      'whatsapp',
+      'telephone',
+      'category',
+      'currency',
+      'logo_img',
+      'banner_img',
+      'description',
+      'team_img',
+      'team_description',
+    ];
+
+    const dataToUpdate = pick(dto, editableFields);
+
+    /* Update the store */
+    await this.storeRepository.update({ id: store_id }, dataToUpdate);
   }
 
   /* Utils */
