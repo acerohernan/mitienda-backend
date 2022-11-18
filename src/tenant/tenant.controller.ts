@@ -5,12 +5,17 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
+import multer from 'multer';
 import {
   AuthTenant,
   AuthTenantRequest,
@@ -88,6 +93,39 @@ export class TenantController {
     @Body() dto: UpdateTenantDTO,
   ) {
     return this.tenantService.updateTenantInformation(dto, tenant.tenant_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/upload/image')
+  @UseInterceptors(
+    FileInterceptor('img', {
+      storage: multer.diskStorage({
+        filename: function (req, file, cb) {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          console.log(file);
+          cb(null, file.fieldname + '-' + uniqueSuffix + file.originalname);
+        },
+        destination: function (req, file, cb) {
+          cb(null, 'uploads');
+        },
+      }),
+    }),
+  )
+  async uploadImage(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /jpeg|jpg|png/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1 * 1000 * 1000 /* 1mb */,
+        })
+        .build(),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log(file);
   }
 
   /* Tenant Store Endpoints*/
