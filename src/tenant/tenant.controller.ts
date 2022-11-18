@@ -14,13 +14,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
-import multer from 'multer';
+import { ApiBody, ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   AuthTenant,
   AuthTenantRequest,
 } from '../shared/decorators/auth-tenant.decorator';
 import { AuthGuard } from '../shared/guards/auth.guard';
+import {
+  imageFileTypeRegex,
+  imageMaxSize,
+  multerImageStorage,
+} from '../shared/utils/multer';
 import { CompleteRegistrationDTO } from './dtos/complete-registration.dto';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
 import { ForgotPasswordDTO } from './dtos/forgot-password.dto';
@@ -69,6 +73,7 @@ export class TenantController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @HttpCode(HttpStatus.OK)
   @Post('/auth/complete-registration')
   async completeRegistration(
@@ -81,12 +86,14 @@ export class TenantController {
 
   /* Tenant Endpoints */
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Get('/information')
   async getInformation(@AuthTenantRequest() tenant: AuthTenant) {
     return this.tenantService.getTenantInformation(tenant.tenant_id);
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Put('/information')
   async updateInformation(
     @AuthTenantRequest() tenant: AuthTenant,
@@ -96,36 +103,39 @@ export class TenantController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Post('/upload/image')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        img: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('img', {
-      storage: multer.diskStorage({
-        filename: function (req, file, cb) {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          console.log(file);
-          cb(null, file.fieldname + '-' + uniqueSuffix + file.originalname);
-        },
-        destination: function (req, file, cb) {
-          cb(null, 'uploads');
-        },
-      }),
+      storage: multerImageStorage,
     }),
   )
   async uploadImage(
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: /jpeg|jpg|png/,
+          fileType: imageFileTypeRegex,
         })
         .addMaxSizeValidator({
-          maxSize: 1 * 1000 * 1000 /* 1mb */,
+          maxSize: imageMaxSize,
         })
         .build(),
     )
     file: Express.Multer.File,
   ) {
-    console.log(file);
+    return this.tenantService.uploadImage(file);
   }
 
   /* Tenant Store Endpoints*/
@@ -136,12 +146,14 @@ export class TenantController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Get('/store/information')
   async getStoreInformation(@AuthTenantRequest() tenant: AuthTenant) {
     return this.tenantService.getStoreInformation(tenant.store_id);
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Put('/store/information')
   async updateStoreInformation(
     @AuthTenantRequest() tenant: AuthTenant,
@@ -151,12 +163,14 @@ export class TenantController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Get('/store/social')
   async getStoreSocial(@AuthTenantRequest() tenant: AuthTenant) {
     return this.tenantService.getStoreSocial(tenant.store_id);
   }
 
   @UseGuards(AuthGuard)
+  @ApiSecurity('bearer')
   @Put('/store/social')
   async updateStoreSocial(
     @AuthTenantRequest() tenant: AuthTenant,

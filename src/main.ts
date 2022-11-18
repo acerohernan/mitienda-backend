@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
@@ -17,6 +18,9 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
+
+  app.use(json());
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   /* This is the nest integration with swagger */
   const config = new DocumentBuilder()

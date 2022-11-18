@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -275,6 +276,19 @@ export class TenantService {
         status: TenantStatus.ACTIVE,
       },
     );
+  }
+
+  async uploadImage(
+    file: Express.Multer.File | null,
+  ): Promise<{ url: string }> {
+    if (!file)
+      throw new UnprocessableEntityException(
+        'The max size of the image is 1mb and the extension must be .jpg,.jpge and .png',
+      );
+
+    const rootUrl = this.config.get('URL');
+
+    return { url: `${rootUrl}/uploads/${file.filename}` };
   }
 
   async getTenantInformation(
