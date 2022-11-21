@@ -35,10 +35,12 @@ export class EmailService {
     tenant: Tenant;
     code: string;
   }) {
+    const frontend_url = this.config.get('FRONTEND_URL');
+    const url = `${frontend_url}/forgot-password/${code}`;
     const subject = 'Restore Password (not-reply)';
     const html = `<span>Hi ${
       tenant.name || ''
-    }, this is the link to restore your password <a  href="http://localhost:3000/tenant/auth/password/verify-code/${code}" target="_blank">http://localhost:3000/tenant/auth/password/verify-code/${code}</a></span>`;
+    }, this is the link to restore your password <a href="${url}" target="_blank">${url}</a></span>`;
 
     await this.sendEmail({ to: tenant.email, subject, html });
   }

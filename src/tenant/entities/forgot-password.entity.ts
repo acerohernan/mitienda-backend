@@ -14,7 +14,6 @@ export class ForgotPasswordRequest {
 
   @Column({
     type: 'varchar',
-    unique: true,
   })
   tenant_id: string;
 

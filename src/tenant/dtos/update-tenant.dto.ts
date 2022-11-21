@@ -10,11 +10,9 @@ export class UpdateTenantDTO {
 
   @ApiProperty()
   @IsOptional()
-  @Length(6, 30, { message: 'Please enter a valid name' })
   name?: string;
 
   @ApiProperty()
-  @Length(6, 30, { message: 'Please enter a valid surname' })
   @IsOptional()
   surname?: string;
 }
