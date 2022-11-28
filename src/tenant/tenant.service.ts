@@ -328,6 +328,7 @@ export class TenantService {
       'name',
       'phone',
       'surname',
+      'profile_img',
     ];
 
     const dataToUpdate = pick(dto, editableFields);

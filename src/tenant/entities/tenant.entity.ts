@@ -59,4 +59,10 @@ export class Tenant {
     type: 'varchar',
   })
   country: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  profile_img: string;
 }

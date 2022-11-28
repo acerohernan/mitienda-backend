@@ -15,4 +15,8 @@ export class UpdateTenantDTO {
   @ApiProperty()
   @IsOptional()
   surname?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  profile_img?: string;
 }
