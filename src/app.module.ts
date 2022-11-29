@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { TenantModule } from './tenant/tenant.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TenantModule } from './tenant/tenant.module';
       serveRoot: '/uploads',
     }),
     TenantModule,
+    ProductModule,
   ],
   controllers: [AppController],
 })
