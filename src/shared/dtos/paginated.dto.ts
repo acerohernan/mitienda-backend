@@ -1,7 +1,19 @@
-export type PaginatedOptions = {
-  page: number;
-  entities_limit: number;
-};
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, Max } from 'class-validator';
+
+export class PaginationQueryOptionsDTO {
+  @ApiProperty()
+  @IsInt({ message: 'The page must be a number' })
+  @Type(() => Number)
+  page?: number = 1;
+
+  @ApiProperty()
+  @IsInt({ message: 'The limit must be a number' })
+  @Type(() => Number)
+  @Max(30, { message: 'The max limit per page is 30' })
+  limit?: number = 10;
+}
 
 export class PaginatedMetadataDTO {
   page: number;
@@ -14,12 +26,12 @@ export class PaginatedMetadataDTO {
 
   constructor(
     entities_count: number,
-    { entities_limit, page }: PaginatedOptions,
+    { limit, page }: PaginationQueryOptionsDTO,
   ) {
     this.page = page;
     this.next_page = page + 1;
-    this.page_count = Math.ceil(entities_count / entities_limit);
-    this.limit = entities_limit;
+    this.page_count = Math.ceil(entities_count / limit);
+    this.limit = limit;
     this.has_next_page = page < this.page_count;
     this.has_previous_page = page > 1;
     this.entities_count = entities_count;

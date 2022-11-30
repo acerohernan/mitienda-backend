@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import {
   AuthTenant,
   AuthTenantRequest,
 } from '../shared/decorators/auth-tenant.decorator';
+import { PaginationQueryOptionsDTO } from '../shared/dtos/paginated.dto';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
@@ -24,8 +26,14 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Get('store/:storeId')
-  async getAllProductsFromStore(@Param('storeId') storeId: string) {
-    return this.productService.getAllFromStore(storeId);
+  async getAllProductsFromStore(
+    @Param('storeId') storeId: string,
+    @Query() { limit, page }: PaginationQueryOptionsDTO,
+  ) {
+    return this.productService.getAllFromStore(storeId, {
+      page: Number(page),
+      limit: Number(limit),
+    });
   }
 
   @Post()
