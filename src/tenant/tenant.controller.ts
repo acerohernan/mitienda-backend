@@ -35,7 +35,7 @@ import { UpdateStoreDTO } from './dtos/update-store.dto';
 import { UpdateTenantDTO } from './dtos/update-tenant.dto';
 import { TenantService } from './tenant.service';
 
-@ApiTags('tenant')
+@ApiTags('Tenant')
 @Controller('tenant')
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}

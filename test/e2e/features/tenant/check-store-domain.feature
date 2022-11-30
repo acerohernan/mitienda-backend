@@ -14,7 +14,7 @@ Feature: Check if a store domain is taken
         {
             "email": "check-domain@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """

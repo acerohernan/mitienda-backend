@@ -9,7 +9,7 @@ Feature: Tenant Sign up
         {
             "email": "signup1@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """
@@ -22,7 +22,7 @@ Feature: Tenant Sign up
         {
             "email": "signup2@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """
@@ -31,7 +31,7 @@ Feature: Tenant Sign up
         {
             "email": "signup2@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """

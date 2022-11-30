@@ -9,7 +9,7 @@ Feature: Complete Registration
         {
             "email": "cregister@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """
@@ -40,7 +40,7 @@ Feature: Complete Registration
         {
             "email": "cregister2@test.com",
             "password": "Password1",
-            "phone": "999113934",
+            "phone": "51999113934",
             "country_code": "PE"
         }
         """

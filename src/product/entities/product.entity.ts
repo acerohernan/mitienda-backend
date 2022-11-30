@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ProductVariant } from '../types';
+import { ProductVariantDTO } from '../dtos/create-variant.dto';
 
 @Entity({
   name: 'store_products',
@@ -37,15 +37,15 @@ export class Product {
   description: string | null;
 
   @Column({
-    type: 'int',
+    type: 'varchar',
   })
-  price: number;
+  price: string;
 
   @Column({
-    type: 'int',
+    type: 'varchar',
     nullable: true,
   })
-  offer_price: number | null;
+  offer_price: string | null;
 
   @Column({
     type: 'varchar',
@@ -56,5 +56,5 @@ export class Product {
     type: 'json',
     nullable: true,
   })
-  variants: Array<ProductVariant>;
+  variants: Array<ProductVariantDTO>;
 }
