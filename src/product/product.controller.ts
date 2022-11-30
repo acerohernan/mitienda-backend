@@ -23,6 +23,11 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Get('store/:storeId')
+  async getAllProductsFromStore(@Param('storeId') storeId: string) {
+    return this.productService.getAllFromStore(storeId);
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(

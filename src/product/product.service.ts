@@ -8,6 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { pick } from 'lodash';
 import { Repository } from 'typeorm';
 import { validate as validateUUid } from 'uuid';
+import {
+  PaginatedDTO,
+  PaginatedMetadataDTO,
+} from '../shared/dtos/paginated.dto';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -124,5 +128,43 @@ export class ProductService {
 
     /* Delete the product */
     await this.productRepository.delete({ id });
+  }
+
+  async getAllFromStore(store_id: string) {
+    /* Validate if is a valid store_id */
+    const isValid = validateUUid(store_id);
+
+    if (!isValid)
+      throw new BadRequestException(
+        `The store_id <${store_id}> is an invalid uuid`,
+      );
+
+    /* Define the query parameters */
+    let limit = 10;
+    let page = 1;
+    let offset = Math.ceil((page - 1) * limit);
+
+    console.log(store_id, offset);
+
+    /* Initializaing the query builder */
+    const queryBuilder =
+      this.productRepository.createQueryBuilder('store_products');
+
+    queryBuilder
+      .skip(offset)
+      .take(limit)
+      .where('store_id = :store_id', { store_id });
+
+    const products_count = await queryBuilder.getCount();
+    const products = await queryBuilder.getMany();
+
+    /* Creating the metada information */
+    const meta_information = new PaginatedMetadataDTO(products_count, {
+      entities_limit: limit,
+      page,
+    });
+
+    /* Return the products with metada */
+    return new PaginatedDTO<Product>(products, 'products', meta_information);
   }
 }
