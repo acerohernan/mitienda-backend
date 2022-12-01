@@ -36,6 +36,18 @@ export class ProductController {
     });
   }
 
+  @Get('store')
+  @UseGuards(AuthGuard)
+  async getAllProductsOwnStore(
+    @Query() { limit, page }: PaginationQueryOptionsDTO,
+    @AuthTenantRequest() { store_id }: AuthTenant,
+  ) {
+    return this.productService.getAllFromStore(store_id, {
+      page: Number(page),
+      limit: Number(limit),
+    });
+  }
+
   @Post()
   @UseGuards(AuthGuard)
   async createProduct(
