@@ -34,13 +34,13 @@ export class CreateProductDTO {
   description?: string;
 
   @ApiProperty()
-  @IsNumberString({}, { message: 'Enter only number for price' })
+  @IsNumberString({}, { message: 'Enter only numbers for price' })
   @IsNotEmpty({ message: 'The product price is required' })
   price: string;
 
-  @ApiProperty()
-  @IsNumberString({}, { message: 'Enter only number for price' })
-  @IsNotEmpty({ message: 'The product price is required' })
+  @ApiProperty({ nullable: true })
+  @IsNumberString({}, { message: 'Enter only numbers for offer price' })
+  @IsOptional()
   offer_price: string | null;
 
   @ApiProperty({ type: Number })
