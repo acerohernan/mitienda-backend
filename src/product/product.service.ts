@@ -34,6 +34,7 @@ export class ProductService {
       description,
       sku,
       variants,
+      images,
     } = dto;
 
     /* Verify if exists a product with the same id */
@@ -54,6 +55,7 @@ export class ProductService {
       price,
       stock,
       variants,
+      images,
     });
 
     await this.productRepository.save(product);
@@ -90,6 +92,7 @@ export class ProductService {
       'sku',
       'stock',
       'variants',
+      'images',
     ];
 
     const informationToEdit = pick(dto, editableFields);

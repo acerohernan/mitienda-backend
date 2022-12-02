@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +10,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
+import { ProductImageDTO } from './create-product-image';
 import { ProductVariantDTO } from './create-variant.dto';
 
 export class CreateProductDTO {
@@ -53,4 +55,11 @@ export class CreateProductDTO {
   @ValidateNested({ each: true })
   @Type(() => ProductVariantDTO)
   variants: ProductVariantDTO[];
+
+  @ApiProperty({ type: [ProductImageDTO] })
+  @IsArray({ message: 'The product images must be an array' })
+  @ArrayMaxSize(4, { message: 'Only 4 images per product' })
+  @ValidateNested({ each: true })
+  @Type(() => ProductImageDTO)
+  images: ProductImageDTO[];
 }

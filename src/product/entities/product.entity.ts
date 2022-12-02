@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductImageDTO } from '../dtos/create-product-image';
 import { ProductVariantDTO } from '../dtos/create-variant.dto';
 
 @Entity({
@@ -54,7 +55,13 @@ export class Product {
 
   @Column({
     type: 'json',
-    nullable: true,
+    default: [],
   })
   variants: Array<ProductVariantDTO>;
+
+  @Column({
+    type: 'json',
+    default: [],
+  })
+  images: Array<ProductImageDTO>;
 }

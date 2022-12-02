@@ -9,6 +9,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
+import { ProductImageDTO } from './create-product-image';
 import { ProductVariantDTO } from './create-variant.dto';
 
 export class UpdateProductDTO {
@@ -54,4 +55,11 @@ export class UpdateProductDTO {
   @ValidateNested({ each: true })
   @Type(() => ProductVariantDTO)
   variants?: ProductVariantDTO[];
+
+  @ApiPropertyOptional({ type: [ProductImageDTO] })
+  @IsOptional()
+  @IsArray({ message: 'The product images must be in array' })
+  @ValidateNested({ each: true })
+  @Type(() => ProductImageDTO)
+  images?: ProductImageDTO[];
 }
