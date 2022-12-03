@@ -8,7 +8,6 @@ import {
   ParseFilePipeBuilder,
   Post,
   Put,
-  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -140,8 +139,13 @@ export class TenantController {
 
   /* Tenant Store Endpoints*/
 
-  @Get('/store/domain/check')
-  async getStoreDomainAvaibility(@Query('domain') domain: string | undefined) {
+  @Get('/store/domain/:domain')
+  async getStoreByDomain(@Param('domain') domain: string | undefined) {
+    return this.tenantService.getStoreByDomain(domain);
+  }
+
+  @Get('/store/domain/:domain/check')
+  async getStoreDomainAvaibility(@Param('domain') domain: string | undefined) {
     return this.tenantService.getStoreDomainAvaibility(domain);
   }
 

@@ -220,6 +220,38 @@ export class TenantService {
       );
   }
 
+  async getStoreByDomain(domain: string | undefined): Promise<{ store: any }> {
+    if (!domain) throw new BadRequestException('The store domain is invalid');
+
+    if (domain.length < 6 || domain.length > 20)
+      throw new BadRequestException(
+        'The store domain must have minimum 6 characters and maximun 20 characters',
+      );
+
+    const store = await this.storeRepository.findOneBy({
+      domain,
+    });
+
+    if (!store)
+      throw new NotFoundException(
+        `The store with domain <${domain}> not exists`,
+      );
+
+    const privateFields = [];
+
+    const storeToSend = omit(store, privateFields);
+    const social = await this.storeSocialRepository.findOneBy({
+      store_id: store.id,
+    });
+
+    return {
+      store: {
+        ...storeToSend,
+        social,
+      },
+    };
+  }
+
   async completeRegistration(dto: CompleteRegistrationDTO, tenant_id: string) {
     const {
       tenant_name,

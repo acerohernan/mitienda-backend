@@ -32,6 +32,7 @@ Feature: Update Product
             "price": "7.00",
             "offer_price": "8.00",
             "stock": 30,
+            "images": [],
             "variants": [
                 {
                     "name": "Test Variant",
