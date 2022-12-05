@@ -27,11 +27,11 @@ export class TypeOrmEnvironmentArranger implements EnvironmentArranger {
   private async createTheConnection() {
     const appDataSource = new DataSource({
       type: 'postgres',
-      username: 'mitienda',
+      username: 'mitienda_test',
       password: 'password',
-      port: 5432,
+      port: 5433,
       host: 'localhost',
-      database: 'mitienda_local',
+      database: 'mitienda_local_test',
       entities: [__dirname + '/../../../src/**/**/entities/*{.js,.ts}'],
       synchronize: true,
     });

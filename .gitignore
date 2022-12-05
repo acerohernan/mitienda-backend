@@ -39,3 +39,7 @@ lerna-debug.log*
 
 #App
 /uploads
+.env
+.env.test
+.env.production
+.env.development

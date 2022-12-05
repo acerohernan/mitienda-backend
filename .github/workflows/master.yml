@@ -16,11 +16,11 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: mitienda
+          POSTGRES_USER: mitienda_test
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: mitienda_local
+          POSTGRES_DB: mitienda_local_test
         ports:
-          - 5432:5432
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -50,11 +50,11 @@ jobs:
         run: |
           yarn test
         env:
-          TYPEORM_USERNAME: mitienda
+          TYPEORM_USERNAME: mitienda_test
           TYPEORM_PASSWORD: password
-          TYPEORM_DATABASE: mitienda_local
+          TYPEORM_DATABASE: mitienda_local_test
           TYPEORM_HOST: localhost
-          TYPEORM_PORT: 5432
+          TYPEORM_PORT: 5433
           MAILER_FROM: Test (no-reply) <test@no-reply.com>
           MAILER_HOST: smtp.ethereal.email
           MAILER_PORT: 587
