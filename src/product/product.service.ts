@@ -13,14 +13,19 @@ import {
   PaginatedMetadataDTO,
   PaginationQueryOptionsDTO,
 } from '../shared/dtos/paginated.dto';
+import { CreateProductCategoryDTO } from './dtos/create-category.dto';
 import { CreateProductDTO } from './dtos/create-product.dto';
+import { UpdateProductCategoryDTO } from './dtos/update-category';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { ProductCategory } from './entities/category.entity';
 import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product) private productRepository: Repository<Product>,
+    @InjectRepository(ProductCategory)
+    private categoryRepository: Repository<ProductCategory>,
   ) {}
 
   async create(dto: CreateProductDTO, store_id: string): Promise<void> {
@@ -171,5 +176,92 @@ export class ProductService {
 
     /* Return the products with metada */
     return new PaginatedDTO<Product>(products, 'products', meta_information);
+  }
+
+  async createProductCategory(dto: CreateProductCategoryDTO, store_id: string) {
+    const { id, img_url, name } = dto;
+
+    /* Verify if the category exist */
+    const exists = await this.categoryRepository.findOneBy({ id });
+
+    if (exists)
+      throw new BadRequestException(
+        `Already exists a category with id <${id}>`,
+      );
+
+    /* Save the category */
+    const category = this.categoryRepository.create({
+      id,
+      store_id,
+      img_url,
+      name,
+    });
+
+    await this.categoryRepository.save(category);
+  }
+
+  async updateProductCategory(
+    category_id: string,
+    dto: UpdateProductCategoryDTO,
+    store_id: string,
+  ) {
+    /* Verify is the category exists */
+    const category = await this.categoryRepository.findOneBy({
+      id: category_id,
+    });
+
+    if (!category)
+      throw new NotFoundException(
+        `The category with id <${category_id}> not exists`,
+      );
+
+    /* Verify if the user is the owner */
+    const isOwner = category.store_id === store_id;
+
+    if (!isOwner)
+      throw new ForbiddenException(
+        'You not have permission to update this resource',
+      );
+
+    /* Update the category */
+    const editableFields: Array<keyof UpdateProductCategoryDTO> = [
+      'img_url',
+      'name',
+    ];
+
+    const categoryToUpdate = pick(dto, editableFields);
+
+    await this.categoryRepository.update({ id: category_id }, categoryToUpdate);
+  }
+
+  async deleteProductCategory(category_id: string, store_id: string) {
+    /* Verify is the category exists */
+    const category = await this.categoryRepository.findOneBy({
+      id: category_id,
+    });
+
+    if (!category)
+      throw new NotFoundException(
+        `The category with id <${category_id}> not exists`,
+      );
+
+    /* Verify if the user is the owner */
+    const isOwner = category.store_id === store_id;
+
+    if (!isOwner)
+      throw new ForbiddenException(
+        'You not have permission to update this resource',
+      );
+
+    /* Delete the category */
+    await this.categoryRepository.delete({ id: category_id });
+  }
+
+  async getCategoriesFromOwnStore(
+    store_id: string,
+  ): Promise<{ categories: Array<ProductCategory> }> {
+    const categories = await this.categoryRepository.findBy({ store_id });
+
+    return { categories };
   }
 }

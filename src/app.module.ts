@@ -23,9 +23,8 @@ import { TenantModule } from './tenant/tenant.module';
         password: config.get('TYPEORM_PASSWORD'),
         database: config.get('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/entities/*{.js,.ts}'],
-        synchronize: true,
+        synchronize: config.get('NODE_ENV') !== 'production',
       }),
-
       inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({

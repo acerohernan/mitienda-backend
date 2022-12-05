@@ -16,7 +16,9 @@ import {
 } from '../shared/decorators/auth-tenant.decorator';
 import { PaginationQueryOptionsDTO } from '../shared/dtos/paginated.dto';
 import { AuthGuard } from '../shared/guards/auth.guard';
+import { CreateProductCategoryDTO } from './dtos/create-category.dto';
 import { CreateProductDTO } from './dtos/create-product.dto';
+import { UpdateProductCategoryDTO } from './dtos/update-category';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductService } from './product.service';
 
@@ -79,5 +81,46 @@ export class ProductController {
     @AuthTenantRequest() tenant: AuthTenant,
   ) {
     return this.productService.deleteProduct(productId, tenant.store_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('category/store')
+  async getCategoriesFromOwnStore(@AuthTenantRequest() tenant: AuthTenant) {
+    return this.productService.getCategoriesFromOwnStore(tenant.store_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('category')
+  async createProductCategory(
+    @Body() dto: CreateProductCategoryDTO,
+    @AuthTenantRequest() tenant: AuthTenant,
+  ) {
+    return this.productService.createProductCategory(dto, tenant.store_id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('category/:categoryId')
+  async updateProductCategory(
+    @Param('categoryId') categoryId: string,
+    @Body() dto: UpdateProductCategoryDTO,
+    @AuthTenantRequest() tenant: AuthTenant,
+  ) {
+    return this.productService.updateProductCategory(
+      categoryId,
+      dto,
+      tenant.store_id,
+    );
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('category/:categoryId')
+  async deleteProductCategory(
+    @Param('categoryId') categoryId: string,
+    @AuthTenantRequest() tenant: AuthTenant,
+  ) {
+    return this.productService.deleteProductCategory(
+      categoryId,
+      tenant.store_id,
+    );
   }
 }
