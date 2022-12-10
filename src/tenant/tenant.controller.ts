@@ -50,8 +50,7 @@ export class TenantController {
   @HttpCode(HttpStatus.OK)
   @Post('/auth/login')
   async login(@Body() dto: LoginTenantDTO) {
-    const { token } = await this.tenantService.login(dto);
-    return { token };
+    return this.tenantService.login(dto);
   }
 
   @HttpCode(HttpStatus.OK)

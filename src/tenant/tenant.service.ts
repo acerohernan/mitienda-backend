@@ -113,7 +113,11 @@ export class TenantService {
     await this.storeSocialRepository.save(social);
   }
 
-  async login(dto: LoginTenantDTO): Promise<{ token: string }> {
+  async login(dto: LoginTenantDTO): Promise<{
+    token: string;
+    tenant: Partial<Tenant>;
+    store: Partial<Store>;
+  }> {
     const { email, password } = dto;
 
     /* Verify is the email is registered */
@@ -137,7 +141,26 @@ export class TenantService {
       expiresIn: this.config.get('JWT_EXPIRATION'),
     });
 
-    return { token };
+    /* Setup tenant information */
+    const tenantPrivateFields: Array<keyof Tenant> = ['password'];
+
+    const tenantToShare = omit(tenant, tenantPrivateFields);
+
+    /* Setup store information */
+    const store = await this.storeRepository.findOneBy({
+      tenant_id: tenant.id,
+    });
+
+    if (!store)
+      throw new NotFoundException(
+        `The store from tenant <${tenant.id}> not exists`,
+      );
+
+    const storePrivateFields: Array<keyof Store> = ['tenant_id'];
+
+    const storeToShare = omit(store, storePrivateFields);
+
+    return { token, tenant: tenantToShare, store: { ...storeToShare } };
   }
 
   async forgotPassword(dto: ForgotPasswordDTO): Promise<any> {

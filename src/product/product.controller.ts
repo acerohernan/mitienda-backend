@@ -18,6 +18,7 @@ import { PaginationQueryOptionsDTO } from '../shared/dtos/paginated.dto';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CreateProductCategoryDTO } from './dtos/create-category.dto';
 import { CreateProductDTO } from './dtos/create-product.dto';
+import { GetProductCategoriesDTO } from './dtos/get-categories.dto';
 import { UpdateProductCategoryDTO } from './dtos/update-category';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductService } from './product.service';
@@ -86,7 +87,22 @@ export class ProductController {
   @UseGuards(AuthGuard)
   @Get('category/store')
   async getCategoriesFromOwnStore(@AuthTenantRequest() tenant: AuthTenant) {
-    return this.productService.getCategoriesFromOwnStore(tenant.store_id);
+    return this.productService.getCategoriesFromStore(tenant.store_id, {
+      limit: 99,
+      page: 1,
+    });
+  }
+
+  @Get('category/store/:storeId')
+  async getCategoriesFromStore(
+    @Param('storeId') storeId: string,
+    @Query() { limit, page, products }: GetProductCategoriesDTO,
+  ) {
+    return this.productService.getCategoriesFromStore(storeId, {
+      limit: Number(limit),
+      page: Number(page),
+      products: Number(products),
+    });
   }
 
   @UseGuards(AuthGuard)

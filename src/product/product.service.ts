@@ -15,10 +15,12 @@ import {
 } from '../shared/dtos/paginated.dto';
 import { CreateProductCategoryDTO } from './dtos/create-category.dto';
 import { CreateProductDTO } from './dtos/create-product.dto';
+import { GetProductCategoriesDTO } from './dtos/get-categories.dto';
 import { UpdateProductCategoryDTO } from './dtos/update-category';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductCategory } from './entities/category.entity';
 import { Product } from './entities/product.entity';
+import { ProductCategoryWithProducts } from './types';
 
 @Injectable()
 export class ProductService {
@@ -257,11 +259,67 @@ export class ProductService {
     await this.categoryRepository.delete({ id: category_id });
   }
 
-  async getCategoriesFromOwnStore(
+  async getCategoriesFromStore(
     store_id: string,
-  ): Promise<{ categories: Array<ProductCategory> }> {
-    const categories = await this.categoryRepository.findBy({ store_id });
+    query: GetProductCategoriesDTO,
+  ): Promise<PaginatedDTO<ProductCategoryWithProducts>> {
+    const isValid = validateUUid(store_id);
 
-    return { categories };
+    if (!isValid)
+      throw new BadRequestException(
+        `The store_id <${store_id}> is an invalid uuid`,
+      );
+
+    /* Define the query parameters */
+    let limit: number = query.limit || 10;
+    let page: number = query.page || 1;
+    let offset = Math.ceil((page - 1) * limit);
+    let products: number = query.products || 0;
+
+    /* Initializaing the query builder */
+    const queryBuilder = this.categoryRepository.createQueryBuilder(
+      'store_product_categories',
+    );
+
+    queryBuilder
+      .skip(offset)
+      .take(limit)
+      .where('store_id = :store_id', { store_id });
+
+    const categories_count = await queryBuilder.getCount();
+    const categories = await queryBuilder.getMany();
+
+    /* Creating the metadata information */
+    const meta_information = new PaginatedMetadataDTO(categories_count, {
+      limit,
+      page,
+    });
+
+    /* Getting the products */
+
+    let categoriesToSend: Array<ProductCategoryWithProducts> = [];
+
+    if (products <= 0) {
+      categoriesToSend = categories.map((cat) => ({
+        products: [],
+        ...cat,
+      }));
+
+      return new PaginatedDTO(categoriesToSend, 'categories', meta_information);
+    }
+
+    /* Get the products of each category */
+    for (const cat of categories) {
+      const productsArr = await this.productRepository.find({
+        where: { category_id: cat.id },
+        take: products,
+      });
+      categoriesToSend.push({
+        ...cat,
+        products: productsArr,
+      });
+    }
+
+    return new PaginatedDTO(categoriesToSend, 'categories', meta_information);
   }
 }

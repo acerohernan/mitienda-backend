@@ -1,3 +1,5 @@
+import { Product } from '../entities/product.entity';
+
 export type ProductVariant = {
   name: string;
   mandatory: boolean;
@@ -8,4 +10,11 @@ export type ProductVariant = {
 export type ProductVariantOption = {
   name: string;
   price: number;
+};
+
+export type ProductCategoryWithProducts = {
+  id: string;
+  name: string;
+  img_url: string;
+  products: Array<Product>;
 };
