@@ -12,6 +12,7 @@ import { omit, pick } from 'lodash';
 import randomstring from 'randomstring';
 import { Repository } from 'typeorm';
 import { v4 as uuid, validate as validateUuid } from 'uuid';
+import { CloudinaryService } from '../shared/services/cloudinary.service';
 import { EmailService } from '../shared/services/email.service';
 import { COUNTRIES } from './constants/tenant.constans';
 import { CompleteRegistrationDTO } from './dtos/complete-registration.dto';
@@ -38,6 +39,7 @@ export class TenantService {
     @InjectRepository(ForgotPasswordRequest)
     private forgotPasswordRequestRepository: Repository<ForgotPasswordRequest>,
     private emailService: EmailService,
+    private cloudinaryService: CloudinaryService,
     private config: ConfigService,
   ) {}
 
@@ -341,9 +343,12 @@ export class TenantService {
         'The max size of the image is 1mb and the extension must be .jpg,.jpge and .png',
       );
 
-    const rootUrl = this.config.get('URL');
-
-    return { url: `${rootUrl}/uploads/${file.filename}` };
+    try {
+      const { url } = await this.cloudinaryService.uploadImage(file);
+      return { url };
+    } catch (err) {
+      throw new UnprocessableEntityException('The image cannot be uploaded');
+    }
   }
 
   async getTenantInformation(

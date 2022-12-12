@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
 import { AppController } from './app.controller';
 import { ProductModule } from './product/product.module';
 import { TenantModule } from './tenant/tenant.module';
@@ -26,10 +24,6 @@ import { TenantModule } from './tenant/tenant.module';
         synchronize: config.get('NODE_ENV') !== 'production',
       }),
       inject: [ConfigService],
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
     }),
     TenantModule,
     ProductModule,
