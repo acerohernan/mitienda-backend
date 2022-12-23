@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class AppController {
   @Get('')
   async root() {
-    return `<h1>Welcome to MiTienda API</h1>`;
+    return `<h1>Welcome to MiTienda API with CI/CD</h1>`;
   }
 
   @Get('status')
