@@ -1,5 +1,4 @@
 /* This configuration is for the typeorm cli, to generate migrations */
-
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 import { DataSource } from 'typeorm';

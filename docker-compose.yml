@@ -28,38 +28,6 @@ services:
     networks:
       - api-network
 
-  api:
-    build:
-      context: .
-    restart: unless-stopped
-    container_name: api
-    environment:
-      - TYPEORM_USERNAME=mitienda
-      - TYPEORM_PASSWORD=password
-      - TYPEORM_DATABASE=mitienda_local
-      - TYPEORM_HOST=postgres
-      - TYPEORM_PORT=5432
-    ports:
-      - 3000:3000
-    depends_on:
-      - postgres
-    networks:
-      - api-network
-
-  webserver:
-    image: nginx:mainline-alpine
-    container_name: webserver
-    restart: unless-stopped
-    ports:
-      - '80:80'
-    volumes:
-      - web-root:/var/www/html
-      - ./nginx:/etc/nginx/conf.d
-    depends_on:
-      - api
-    networks:
-      - api-network
-
 networks:
   api-network:
     driver: bridge
