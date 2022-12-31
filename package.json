@@ -1,10 +1,8 @@
 {
   "name": "miarte-backend",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "version": "1.0.0",
+  "description": "MiTienda Backend App",
+  "author": "acerohernan",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -27,6 +25,7 @@
     "typeorm:revert-migration": "yarn typeorm -- -d ./orm.config.ts migration:revert"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.241.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",

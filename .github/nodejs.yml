@@ -1,0 +1,64 @@
+name: Node CI
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.12.0]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: mitienda_test
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mitienda_local_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: User Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Installing nest cli
+        run: |
+          npm i -g @nestjs/cli
+
+      - name: yarn install
+        run: |
+          yarn
+
+      - name: yarn build
+        run: |
+          yarn build
+
+      - name: yarn test
+        run: |
+          yarn test
+        env:
+          TYPEORM_USERNAME: mitienda_test
+          TYPEORM_PASSWORD: password
+          TYPEORM_DATABASE: mitienda_local_test
+          TYPEORM_HOST: localhost
+          TYPEORM_PORT: 5433
+          MAILER_FROM: Test (no-reply) <test@no-reply.com>
+          MAILER_HOST: smtp.ethereal.email
+          MAILER_PORT: 587
+          MAILER_USER: francesco.cartwright@ethereal.email
+          MAILER_PASS: 32dnvuVe3xjVFZsfv5
+          JWT_SECRET: testsecret
+          JWT_EXPIRATION: 15m

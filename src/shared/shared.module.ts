@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CloudinaryService } from './services/cloudinary.service';
 import { EmailService } from './services/email.service';
+import { S3Service } from './services/s3.service';
 
 @Module({
-  providers: [EmailService, CloudinaryService],
-  exports: [EmailService, CloudinaryService],
+  providers: [EmailService, S3Service],
+  exports: [EmailService, S3Service],
 })
 export class SharedModule {}

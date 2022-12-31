@@ -3,6 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import toStream from 'buffer-to-stream';
 import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
 
+/**
+ * @deprecated
+ */
 @Injectable()
 export class CloudinaryService {
   constructor(private config: ConfigService) {

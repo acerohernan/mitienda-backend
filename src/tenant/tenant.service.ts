@@ -12,8 +12,8 @@ import { omit, pick } from 'lodash';
 import randomstring from 'randomstring';
 import { Repository } from 'typeorm';
 import { v4 as uuid, validate as validateUuid } from 'uuid';
-import { CloudinaryService } from '../shared/services/cloudinary.service';
 import { EmailService } from '../shared/services/email.service';
+import { S3Service } from '../shared/services/s3.service';
 import { COUNTRIES } from './constants/tenant.constans';
 import { CompleteRegistrationDTO } from './dtos/complete-registration.dto';
 import { CreateTenantDTO } from './dtos/create-tenant.dto';
@@ -39,8 +39,8 @@ export class TenantService {
     @InjectRepository(ForgotPasswordRequest)
     private forgotPasswordRequestRepository: Repository<ForgotPasswordRequest>,
     private emailService: EmailService,
-    private cloudinaryService: CloudinaryService,
     private config: ConfigService,
+    private s3Service: S3Service,
   ) {}
 
   async signUp(dto: CreateTenantDTO): Promise<void> {
@@ -344,7 +344,7 @@ export class TenantService {
       );
 
     try {
-      const { url } = await this.cloudinaryService.uploadImage(file);
+      const { url } = await this.s3Service.uploadFileToS3(file);
       return { url };
     } catch (err) {
       throw new UnprocessableEntityException('The image cannot be uploaded');
